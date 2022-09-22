@@ -19,7 +19,7 @@ jobs:
           sudo apt-get install -y python3-semver
           if [ -z "$NEW_VERSION" ]; then
              echo "Current Version: $(cat VERSION)"
-             pysemver  nextver  $(cat VERSION) patch > VERSION
+             /usr/lib/python3/dist-packages/semver.py  nextver  $(cat VERSION) patch > VERSION
           else
              echo $NEW_VERSION > VERSION
           fi
