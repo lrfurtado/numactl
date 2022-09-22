@@ -16,10 +16,10 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           set -x
-          sudo apt-get install -y python3-semver
+          sudo apt-get install -y node-semver
           if [ -z "$NEW_VERSION" ]; then
              echo "Current Version: $(cat VERSION)"
-             /usr/lib/python3/dist-packages/semver.py  nextver  $(cat VERSION) patch > VERSION
+             semver -i patch $(cat VERSION) > VERSION
           else
              echo $NEW_VERSION > VERSION
           fi
