@@ -1,0 +1,33 @@
+name: "cut-release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version'
+        required: false
+
+
+
+jobs:
+  update_sem_version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          set -x
+          wget -q  https://github.com/threecommaio/sembump/releases/download/v1.0.0/sembump_1.0.0_linux_amd64
+          mv sembump_1.0.0_linux_amd64 /tmp/sembump
+          chmod +x /tmp/sembump
+          if [ -z "$NEW_VERSION" ]; then
+             echo -n "Current Version: " 
+             cat VERSION
+             /tmp/sembump $(cat VERSION) patch > VERSION
+          else
+             echo $NEW_VERSION > VERSION
+          fi
+          
+          cat VERSION
+          
+        env:
+          NEW_VERSION: ${{ inputs.version }}
