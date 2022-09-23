@@ -47,8 +47,9 @@ jobs:
         with:
           tag: "v${{ steps.bump-version-file.outputs.NEW_VERSION }}"
           message: "v{{ steps.bump-version-file.outputs.NEW_VERSION }} release"
-      - name
-
+      - name: Create tarball file for binary
+        run: | 
+          tar cvzf numactl-{{ steps.bump-version-file.outputs.NEW_VERSION }}.tgz -C /usr/local/numactl/ .
       - name: Create Release
         id: create_release
         uses: marvinpinto/action-automatic-releases@latest
