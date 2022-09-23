@@ -36,3 +36,13 @@ jobs:
         with:
           tag: "v${{ steps.bump-version-file.outputs.NEW_VERSION }}"
           message: "v{{ steps.bump-version-file.outputs.NEW_VERSION }} release"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v{{ steps.bump-version-file.outputs.NEW_VERSION }}
+          release_name: Release {{ steps.bump-version-file.outputs.NEW_VERSION }}
+          draft: false
+          prerelease: false
