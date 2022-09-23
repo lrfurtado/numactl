@@ -7,19 +7,17 @@ on:
         description: 'version'
         required: false
 
-
-
 jobs:
   update_sem_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - run: |
           set -x
-          sudo apt-get install -y node-semver
+          sudo apt-get install -y python3-semver
           if [ -z "$NEW_VERSION" ]; then
              echo "Current Version: $(cat VERSION)"
-             semver -i patch $(cat VERSION) > VERSION
+             pysemver bump patch $(cat VERSION) > VERSION
           else
              echo $NEW_VERSION > VERSION
           fi
@@ -28,3 +26,9 @@ jobs:
           
         env:
           NEW_VERSION: ${{ inputs.version }}
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'VERSION'
+          message: bump semantic version
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
