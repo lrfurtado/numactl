@@ -18,7 +18,8 @@ jobs:
           sudo apt-get install build-essential -y
           ./autogen.sh
           ./configure
-          make
+          make distcheck
+          make install DESTDIR=/usr/local/numactl
       - name: Update VERSION file on checkout 
         run: |
           set -x
@@ -46,6 +47,8 @@ jobs:
         with:
           tag: "v${{ steps.bump-version-file.outputs.NEW_VERSION }}"
           message: "v{{ steps.bump-version-file.outputs.NEW_VERSION }} release"
+      - name
+
       - name: Create Release
         id: create_release
         uses: marvinpinto/action-automatic-releases@latest
@@ -56,4 +59,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            VERSION
+            *tar.gz
+            *tgz
