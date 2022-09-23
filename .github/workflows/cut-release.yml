@@ -11,8 +11,10 @@ jobs:
   update_sem_version:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - run: |
+      - name: Checkout code 
+        uses: actions/checkout@v3
+      - name: Update VERSION file on checkout 
+        run: |
           set -x
           sudo apt-get install -y python3-semver
           if [ -z "$NEW_VERSION" ]; then
@@ -26,23 +28,26 @@ jobs:
         id: bump-version-file  
         env:
           NEW_VERSION: ${{ inputs.version }}
-      - uses: EndBug/add-and-commit@v9
+      - name: Commit VERSION file 
+        uses: EndBug/add-and-commit@v9
         with:
           add: 'VERSION'
           message: bump semantic version
           committer_name: GitHub Actions
           committer_email: actions@github.com
-      - uses: rickstaa/action-create-tag@v1
+      - name: Create Tag
+        uses: rickstaa/action-create-tag@v1
         with:
           tag: "v${{ steps.bump-version-file.outputs.NEW_VERSION }}"
           message: "v{{ steps.bump-version-file.outputs.NEW_VERSION }} release"
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          tag_name: v${{ steps.bump-version-file.outputs.NEW_VERSION }}
-          release_name: Release ${{ steps.bump-version-file.outputs.NEW_VERSION }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: v${{ steps.bump-version-file.outputs.NEW_VERSION }}
+          release_name: "Release ${{ steps.bump-version-file.outputs.NEW_VERSION }}"
           draft: false
           prerelease: false
+          files: |
+            VERSION
