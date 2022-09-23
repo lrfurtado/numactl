@@ -21,9 +21,9 @@ jobs:
           else
              echo $NEW_VERSION > VERSION
           fi
-          
-          cat VERSION
-          
+          export NEW_VERSION=$(cat VERSION)
+          echo "::set-output name=NEW_VERSION::$NEW_VERSION" 
+        id: bump-version-file  
         env:
           NEW_VERSION: ${{ inputs.version }}
       - uses: EndBug/add-and-commit@v9
@@ -32,3 +32,7 @@ jobs:
           message: bump semantic version
           committer_name: GitHub Actions
           committer_email: actions@github.com
+      - uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "v${{ steps.bump-version-file.outputs.NEW_VERSION }}"
+          message: "v{{ steps.bump-version-file.outputs.NEW_VERSION }} release"
