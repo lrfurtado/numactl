@@ -1,0 +1,34 @@
+name: "cut-release"
+on:
+  workflow_run:
+    workflows: [cut-release-tag]
+    types:
+      - completed
+  push:
+    tags:        
+      - v*
+jobs:
+  cut_release:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install deps
+        run: |
+          sudo apt-get install build-essential python3-semver fakeroot -y
+      - name: Checkout code 
+        uses: actions/checkout@v3
+      - name: "Build & test"
+        run: |
+          ./autogen.sh
+          ./configure
+          fakeroot make distcheck
+      - name: Create Release
+        id: create_release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "$GITHUB_REF_NAME"
+          release_name: "Release numactl $GITHUB_REF_NAME"
+          draft: true
+          prerelease: false
+          files: |
+            numactl-*.tar.gz
